@@ -14,6 +14,9 @@ Includes:
 
 Why I created this image: [Simple mail server with Docker](http://tvi.al/simple-mail-server-with-docker/)
 
+## override
+This image allows user to sue plain and login auth methods.
+
 ## informations:
 
 - only config files, no *sql database required
