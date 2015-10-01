@@ -1,5 +1,5 @@
 FROM ubuntu:14.04
-MAINTAINER Thomas VIAL
+MAINTAINER Thomas VIAL & Thomas Hourlier
 
 # Packages
 RUN apt-get update -q --fix-missing

@@ -102,7 +102,7 @@ If a matching certificate (files listed above) is found in `postfix/ssl`, it wil
 	server:    				<your-server-ip-or-hostname>
 	imap port: 				143 or 993 with ssl (recommended)
 	imap path prefix:		INBOX
-	auth method:			md5 challenge-response
+	auth method:			plain login md5 challenge-response
 
 	# smtp
 	smtp port:				25 or 587 with ssl (recommended)
