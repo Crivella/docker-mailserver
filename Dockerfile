@@ -1,10 +1,17 @@
-FROM ubuntu:14.04
-MAINTAINER Thomas VIAL & Thomas Hourlier
+FROM ubuntu:18.04
+MAINTAINER CMrC
 
 # Packages
 RUN apt-get update -q --fix-missing
 RUN apt-get -y upgrade
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install vim postfix sasl2-bin courier-imap courier-imap-ssl courier-authdaemon supervisor gamin amavisd-new spamassassin clamav clamav-daemon libnet-dns-perl libmail-spf-perl pyzor razor arj bzip2 cabextract cpio file gzip nomarch p7zip pax unzip zip zoo rsyslog 
+# Workaround from https://bugs.launchpad.net/ubuntu/+source/courier/+bug/1781243
+RUN touch /usr/share/man/man5/maildir.courier.5.gz
+RUN touch /usr/share/man/man8/deliverquota.courier.8.gz
+RUN touch /usr/share/man/man1/maildirmake.courier.1.gz
+RUN touch /usr/share/man/man7/maildirquota.courier.7.gz
+RUN touch /usr/share/man/man1/makedat.courier.1.gz
+# Install apt packages
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install vim postfix sasl2-bin courier-imap courier-imap-ssl courier-authdaemon  gamin libnet-dns-perl libmail-spf-perl file rsyslog 
 RUN apt-get autoclean
 
 # Configures Saslauthd
@@ -15,20 +22,6 @@ RUN echo 'NAME="saslauthd"\nSTART=yes\nMECHANISMS="sasldb"\nTHREADS=0\nPWDIR=/va
 # Configures Courier
 RUN sed -i -r 's/daemons=5/daemons=0/g' /etc/courier/authdaemonrc
 RUN sed -i -r 's/authmodulelist="authpam"/authmodulelist="authuserdb"/g' /etc/courier/authdaemonrc
-
-# Enables Spamassassin and CRON updates
-RUN sed -i -r 's/^(CRON|ENABLED)=0/\1=1/g' /etc/default/spamassassin
-
-# Enables Amavis
-RUN sed -i -r 's/#(@|   \\%)bypass/\1bypass/g' /etc/amavis/conf.d/15-content_filter_mode
-RUN adduser clamav amavis
-RUN adduser amavis clamav
-RUN useradd -u 5000 -d /home/docker -s /bin/bash -p $(echo docker | openssl passwd -1 -stdin) docker
-
-# Enables Clamav
-RUN chmod 644 /etc/clamav/freshclam.conf
-RUN (crontab -l ; echo "0 1 * * * /usr/bin/freshclam --quiet") | sort - | uniq - | crontab -
-RUN freshclam
 
 # Configures Postfix
 ADD postfix/main.cf /etc/postfix/main.cf

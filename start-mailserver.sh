@@ -70,17 +70,9 @@ fi
 
 echo "Fixing permissions"
 chown -R 5000:5000 /var/mail
-mkdir -p /var/log/clamav && chown -R clamav:root /var/log/clamav
 
 echo "Creating /etc/mailname"
 echo $(hostname -d) > /etc/mailname
-
-echo "Configuring Spamassassin"
-echo "required_hits 5.0" >> /etc/mail/spamassassin/local.cf
-echo "report_safe 0" >> /etc/mail/spamassassin/local.cf
-echo "required_score 5" >> /etc/mail/spamassassin/local.cf
-echo "rewrite_header Subject ***SPAM***" >> /etc/mail/spamassassin/local.cf
-cp /tmp/spamassassin/rules.cf /etc/spamassassin/
 
 echo "Starting daemons"
 cron
@@ -89,9 +81,6 @@ cron
 /etc/init.d/courier-authdaemon start
 /etc/init.d/courier-imap start
 /etc/init.d/courier-imap-ssl start
-/etc/init.d/spamassassin start
-/etc/init.d/clamav-daemon start
-/etc/init.d/amavis start
 /etc/init.d/postfix start
 
 echo "Listing SASL users"
