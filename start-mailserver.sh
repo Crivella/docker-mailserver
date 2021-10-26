@@ -68,6 +68,8 @@ if [ -e "/tmp/postfix/ssl/$(hostname)-cert.pem" ] \
   sed -i -r 's/TLS_CERTFILE=\/etc\/courier\/imapd.pem/TLS_CERTFILE=\/etc\/postfix\/ssl\/'$(hostname)'-combined.pem/g' /etc/courier/imapd-ssl
 fi
 
+sed -i -r 's/EXTRA_NET/$EXTRA_NET/g' /etc/postfix/main.cf
+
 echo "Fixing permissions"
 chown -R 5000:5000 /var/mail
 
