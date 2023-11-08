@@ -68,7 +68,9 @@ if [ -e "/tmp/postfix/ssl/$(hostname)-cert.pem" ] \
   sed -i -r 's/TLS_CERTFILE=\/etc\/courier\/imapd.pem/TLS_CERTFILE=\/etc\/postfix\/ssl\/'$(hostname)'-combined.pem/g' /etc/courier/imapd-ssl
 fi
 
-envsubst '$RELAY_HOST $EXTRA_NET' < /tmp/main.cf > /etc/postfix/main.cf
+export RELAY_HOST
+export EXTRA_NET
+envsubst '$RELAY_HOST $EXTRA_NET' < /etc/postfix/main.cf.tpl > /etc/postfix/main.cf
 
 echo "Fixing permissions"
 chown -R 5000:5000 /var/mail

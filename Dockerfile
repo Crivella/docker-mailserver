@@ -10,7 +10,7 @@ RUN touch /usr/share/man/man1/maildirmake.courier.1.gz
 RUN touch /usr/share/man/man7/maildirquota.courier.7.gz
 RUN touch /usr/share/man/man1/makedat.courier.1.gz
 # Install apt packages
-RUN DEBIAN_FRONTEND=noninteractive apt-get -y install vim postfix sasl2-bin courier-imap courier-imap-ssl courier-authdaemon  gamin libnet-dns-perl libmail-spf-perl file rsyslog 
+RUN DEBIAN_FRONTEND=noninteractive apt-get -y install vim postfix sasl2-bin courier-imap courier-authdaemon  gamin libnet-dns-perl libmail-spf-perl file rsyslog gettext-base
 RUN apt-get autoclean
 
 # Configures Saslauthd
@@ -24,19 +24,20 @@ RUN sed -i -r 's/authmodulelist="authpam"/authmodulelist="authuserdb"/g' /etc/co
 
 ENV \
     RELAY_HOST="" \
-    EXTRA_NET="" \
-    SERVER_USER="postfix" \
-    SERVER_PASS="postfix" \
-    SERVER_DOMAIN="example.com"
+    EXTRA_NET=""
 
 EXPOSE 25 143
 
+VOLUME [ "/var/mail" ]
+
 # Configures Postfix
-ADD postfix/main.cf /tmp/main.cf
+ADD postfix/main.cf /etc/postfix/main.cf.tpl
 ADD postfix/master.cf /etc/postfix/master.cf
 ADD postfix/sasl/smtpd.conf /etc/postfix/sasl/smtpd.conf
 ADD bin/generate-ssl-certificate /usr/local/bin/generate-ssl-certificate
 RUN chmod +x /usr/local/bin/generate-ssl-certificate
+
+RUN touch /var/log/mail.log
 
 # Start-mailserver script
 ADD start-mailserver.sh /usr/local/bin/start-mailserver.sh
