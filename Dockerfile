@@ -1,5 +1,4 @@
-FROM ubuntu:18.04
-MAINTAINER CMrC
+FROM ubuntu:22.04
 
 # Packages
 RUN apt-get update -q --fix-missing
@@ -23,8 +22,17 @@ RUN echo 'NAME="saslauthd"\nSTART=yes\nMECHANISMS="sasldb"\nTHREADS=0\nPWDIR=/va
 RUN sed -i -r 's/daemons=5/daemons=0/g' /etc/courier/authdaemonrc
 RUN sed -i -r 's/authmodulelist="authpam"/authmodulelist="authuserdb"/g' /etc/courier/authdaemonrc
 
+ENV \
+    RELAY_HOST="" \
+    EXTRA_NET="" \
+    SERVER_USER="postfix" \
+    SERVER_PASS="postfix" \
+    SERVER_DOMAIN="example.com"
+
+EXPOSE 25 143
+
 # Configures Postfix
-ADD postfix/main.cf /etc/postfix/main.cf
+ADD postfix/main.cf /tmp/main.cf
 ADD postfix/master.cf /etc/postfix/master.cf
 ADD postfix/sasl/smtpd.conf /etc/postfix/sasl/smtpd.conf
 ADD bin/generate-ssl-certificate /usr/local/bin/generate-ssl-certificate
